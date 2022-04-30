@@ -22,12 +22,9 @@ class Api::V1::TransactionsController < ApplicationController
 
   # Creates a transaction
   def create
-    @transaction = Transaction.new(
-        transaction_id: Transaction.trans_generator, customer_id: params['customer_id'],
-        input_amt: params['input_amt'], input_currency: params['input_currency'],
-        output_amt: params['output_amt'], output_currency: params['output_currency'],
-        is_active: true
-    )
+    @transaction = Transaction.new(transaction_params)
+    @transaction.transaction_id = Transaction.trans_generator
+    @transaction.is_active = true
     if @transaction.save
       transaction = Transaction.single_record(@transaction.id)
       render json: {resp_code: SUCCESS_CODE, resp_desc: transaction }
@@ -41,6 +38,11 @@ class Api::V1::TransactionsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_transactions
     @transaction = Transaction.find(params[:id])
+  end
+
+  def transaction_params
+    params.require(:transaction).permit(:transaction_id, :customer_id, :input_amt, :input_currency, :output_amt,
+                                        :output_currency, :comment, :is_active)
   end
 
 end

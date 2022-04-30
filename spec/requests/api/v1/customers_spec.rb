@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
   describe "GET /create" do
     context "with valid parameters" do
       let(:valid_params) do
-        {
+        { customer: {
             first_name: Faker::Name.name,
             last_name: Faker::Name.name,
             other_names: Faker::Name.name,
@@ -50,7 +50,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
             location: Faker::Address.city,
             height: Faker::Number.decimal(l_digits: 2),
             is_active: true # { Faker::Boolean.boolean }
-        }
+        }}
       end
 
       it "creates a new customer" do
@@ -60,7 +60,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
 
       it "creates a customer with the correct attributes" do
         post "/api/v1/customers", params: valid_params
-        expect(Customer.order(id: :desc).first).to have_attributes valid_params
+        expect(Customer.order(id: :desc).first).to have_attributes valid_params[:customer]
         expect(json["resp_code"]).to eq(success)
       end
     end
@@ -68,14 +68,14 @@ RSpec.describe "Api::V1::Customers", type: :request do
     context "with invalid parameters" do
       # testing for validation failures is just as important!
       let(:valid_params) do
-        {
+        { customer: {
             first_name: Faker::Name.name,
             last_name: Faker::Name.name,
             date_of_birth: Faker::Date.between(from: '1900-09-23', to: '2009-09-25'),
             phone_number: '',
             location: Faker::Address.city,
             status: true # { Faker::Boolean.boolean }
-        }
+        }}
       end
 
       it "cannot create a new customer due to validation error" do
@@ -97,7 +97,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
     context 'valid parameters value' do
       let!(:customer) { FactoryBot.create(:customer) }
       let(:valid_params) do
-        {
+        { customer_id: customer.id, customer: {
             customer_id: customer.id,
             first_name: customer.first_name,
             last_name: customer.last_name,
@@ -106,7 +106,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
             phone_number: Faker::PhoneNumber.cell_phone_in_e164,
             location: customer.location,
             height: customer.height
-        }
+        }}
       end
 
       it 'should update customer details' do
@@ -115,7 +115,7 @@ RSpec.describe "Api::V1::Customers", type: :request do
               as: :json
         expect(response).to have_http_status(200)
         expect(json["resp_code"]).to eq(success)
-        expect(json["resp_desc"]["phone_no"]).to eq(valid_params[:phone_number])
+        expect(json["resp_desc"]["phone_no"]).to eq(valid_params[:customer][:phone_number])
       end
     end
 
@@ -123,14 +123,14 @@ RSpec.describe "Api::V1::Customers", type: :request do
     context 'invalid parameter value for phone number' do
       let!(:customer) { FactoryBot.create(:customer) }
       let(:valid_params) do
-        {
+        { customer_id: customer.id, customer: {
             customer_id: customer.id,
             first_name: customer.first_name,
             last_name: customer.last_name,
             date_of_birth: customer.date_of_birth,
             phone_number: '',
             location: customer.location
-        }
+        }}
       end
 
       it 'cannot update customer details' do

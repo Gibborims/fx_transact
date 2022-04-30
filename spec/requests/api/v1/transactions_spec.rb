@@ -44,7 +44,7 @@ RSpec.describe "Api::V1::Transactions", type: :request do
     context "with valid parameters" do
       let!(:customer) { FactoryBot.create(:customer, is_active: true) }
       let(:valid_params) do
-        {
+        { transaction: {
             customer_id: customer.id,
             transaction_id: Transaction.trans_generator,
             input_amt: Faker::Number.decimal(l_digits: 2),
@@ -52,7 +52,7 @@ RSpec.describe "Api::V1::Transactions", type: :request do
             output_amt: Faker::Number.decimal(l_digits: 2),
             output_currency: Faker::Currency.code,
             is_active: true
-        }
+        }}
       end
 
       it "creates a new transaction" do
@@ -70,13 +70,13 @@ RSpec.describe "Api::V1::Transactions", type: :request do
       # testing for validation failures is just as important!
       #let!(:customer) { FactoryBot.create(:customer, is_active: true) }
       let(:valid_params) do
-        {
+        { transaction: {
             input_amt: "#{Faker::Number.decimal(l_digits: 2)}",
             input_currency: Faker::Currency.code,
             output_amt: "#{Faker::Number.decimal(l_digits: 2)}",
             output_currency: Faker::Currency.code,
             is_active: true
-        }
+        }}
       end
 
       it "cannot create a new transaction due to validation error" do
