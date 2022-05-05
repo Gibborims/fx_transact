@@ -4,9 +4,9 @@ class Transaction < ApplicationRecord
 
   validates :transaction_id, presence: true
   validates :customer_id, presence: true
-  validates :input_amt, presence: true
+  validates :input_amt, numericality: { greater_than: 0 }
   validates :input_currency, presence: true
-  validates :output_amt, presence: true
+  validates :output_amt, numericality: { greater_than: 0 }
   validates :output_currency, presence: true
 
   scope :active, -> { where(is_active: true) }
