@@ -92,5 +92,38 @@ RSpec.describe "Api::V1::Transactions", type: :request do
     end
   end
 
+  describe "GET /update" do
+    context "with valid parameters" do
+      let!(:customer) { FactoryBot.create(:customer, is_active: true) }
+      let!(:transact) { FactoryBot.create(:transaction, customer_id: customer.id, is_active: true) }
+      let(:valid_params) do
+        { transaction: {
+            customer_id: customer.id,
+            transaction_id: transact.transaction_id,
+            input_amt: Faker::Number.decimal(l_digits: 2).to_s,
+            input_currency: Faker::Currency.code,
+            output_amt: Faker::Number.decimal(l_digits: 2).to_s,
+            output_currency: Faker::Currency.code,
+            is_active: true
+        }}
+      end
+
+      it 'should update transaction details' do
+        put "/api/v1/transactions/#{transact.id}",
+            params: valid_params,
+            as: :json
+        expect(response).to have_http_status(200)
+        expect(json["resp_code"]).to eq(success)
+        expect(json["resp_desc"]["input_amt"]).to eq(valid_params[:transaction][:input_amt])
+      end
+
+      # it "creates a transaction with the correct attributes" do
+      #   post "/api/v1/transactions", params: valid_params
+      #   expect(json["resp_code"]).to eq(success)
+      # end
+    end
+
+  end
+
 
 end
