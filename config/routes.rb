@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       get 'customer/:customer_id' => 'customers#show'
 
       post 'transactions' => 'transactions#create'
-      put 'transactions/update' => 'transactions#update'
+      put 'transactions/:id' => 'transactions#update'
       get 'transactions' => 'transactions#index'
       get 'transaction/:id' => 'transactions#show'
       get 'transaction/:customer_id' => 'transactions#cust_transactions'

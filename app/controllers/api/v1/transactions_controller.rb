@@ -1,5 +1,5 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :set_transactions, only: %i[ show ]
+  before_action :set_transactions, only: %i[ show update ]
 
   # Displays all transactions
   def index
@@ -34,6 +34,17 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
 
+  # Update a transaction
+
+  def update
+    if @transaction.update(transaction_params)
+      customer = Transaction.single_record(@transaction.id)
+      render json: {resp_code: SUCCESS_CODE, resp_desc: customer }
+    else
+      render json: { resp_code: FAIL_CODE, resp_desc: Utils.errors(@transaction) }
+    end
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_transactions
@@ -41,7 +52,7 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def transaction_params
-    params.require(:transaction).permit(:transaction_id, :customer_id, :input_amt, :input_currency, :output_amt,
+    params.require(:transaction).permit(:customer_id, :input_amt, :input_currency, :output_amt,
                                         :output_currency, :comment, :is_active)
   end
 
